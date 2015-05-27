@@ -1,13 +1,14 @@
 package com.example.kevin.bitchat;
 
 import android.app.Fragment;
+import android.net.Uri;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
 
-public class ContactsActivity extends ActionBarActivity {
+public class ContactsActivity extends ActionBarActivity implements ContactsFragment.Listener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,5 +42,10 @@ public class ContactsActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
     }
 }
