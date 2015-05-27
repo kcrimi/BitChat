@@ -25,6 +25,7 @@ public class ContactsFragment extends android.app.Fragment implements
 
     private static final String TAG = "Contacts Fragment";
     private Listener mListener;
+    private SimpleCursorAdapter mCursorAdapter;
 
 
     public ContactsFragment() {
@@ -42,15 +43,15 @@ public class ContactsFragment extends android.app.Fragment implements
                 ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME};
         int[] ids = {R.id.number,R.id.name};
 
-        listView.setAdapter(new SimpleCursorAdapter(
+        mCursorAdapter = new SimpleCursorAdapter(
                 getActivity(),
                 R.layout.contact_list_item,
                 null,
                 columns,
                 ids,
                 0
-        ));
-
+        );
+        listView.setAdapter(mCursorAdapter);
         getLoaderManager().initLoader(0, null, this);
         return v;
     }
@@ -78,12 +79,12 @@ public class ContactsFragment extends android.app.Fragment implements
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        Log.d(TAG, "Got a Cursor");
+        mCursorAdapter.swapCursor(data);
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-
+        mCursorAdapter.swapCursor(null);
     }
 
     @Override
