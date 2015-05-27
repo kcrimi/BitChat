@@ -13,12 +13,12 @@
         <EditText
             android:id="@+id/user_name"
             android:hint="@string/name_hint"
-            android:layout_width="match_parent "
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
         <EditText
             android:id="@+id/password"
             android:hint="@string/password_hint"
-            android:layout_width="match_parent "
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
         <EditText
             android:id="@+id/user_number"

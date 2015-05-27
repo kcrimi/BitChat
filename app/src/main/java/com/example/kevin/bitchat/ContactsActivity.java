@@ -1,6 +1,7 @@
 package com.example.kevin.bitchat;
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -14,6 +15,9 @@ public class ContactsActivity extends ActionBarActivity implements ContactsFragm
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contacts);
+
+        Intent i = new Intent(this, SigninActivity.class);
+        startActivity(i);
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
                     .add(R.id.fragment, new ContactsFragment())
