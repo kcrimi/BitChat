@@ -9,6 +9,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.parse.Parse;
+import com.parse.ParseUser;
 
 
 public class ContactsActivity extends ActionBarActivity implements ContactsFragment.Listener {
@@ -23,8 +24,10 @@ public class ContactsActivity extends ActionBarActivity implements ContactsFragm
 
         Parse.initialize(this, "7Ln4bAOFHWFptAKYevJffQnUWMrWJQ0PpHofYNrX", "cAioKy8Q9ZMWIceXPD3vxl4p0u1QDu8rmIUJhIqa");
 
-        Intent i = new Intent(this, SigninActivity.class);
-        startActivity(i);
+        if(ParseUser.getCurrentUser() == null) {
+            Intent i = new Intent(this, SigninActivity.class);
+            startActivity(i);
+        }
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
                     .add(R.id.fragment, new ContactsFragment())

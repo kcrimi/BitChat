@@ -13,19 +13,34 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
+
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.ParseQuery;
+import com.parse.ParseUser;
+
+import org.w3c.dom.Text;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
  * A placeholder fragment containing a simple view.
  */
 public class ContactsFragment extends android.app.Fragment implements
-        AdapterView.OnItemClickListener, LoaderManager.LoaderCallbacks<Cursor>{
+        AdapterView.OnItemClickListener, ContactDataSource.Listener{
 
     private static final String TAG = "Contacts Fragment";
     private Listener mListener;
-    private SimpleCursorAdapter mCursorAdapter;
+    private ArrayList<Contact> mContacts = new ArrayList<>();
+    private ContactAdapter mAdapter;
 
 
     public ContactsFragment() {
@@ -39,52 +54,23 @@ public class ContactsFragment extends android.app.Fragment implements
         ListView listView = (ListView)v.findViewById(R.id.list);
         listView.setOnItemClickListener(this);
 
-        String[] columns = {ContactsContract.CommonDataKinds.Phone.NUMBER,
-                ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME};
-        int[] ids = {R.id.number,R.id.name};
-
-        mCursorAdapter = new SimpleCursorAdapter(
-                getActivity(),
-                R.layout.contact_list_item,
-                null,
-                columns,
-                ids,
-                0
-        );
-        listView.setAdapter(mCursorAdapter);
-        getLoaderManager().initLoader(0, null, this);
+        ContactDataSource dataSource = new ContactDataSource(getActivity(), this);
+        mAdapter = new ContactAdapter(mContacts);
+        listView.setAdapter(mAdapter);
+        getLoaderManager().initLoader(0, null, dataSource);
         return v;
     }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Cursor cursor = ((SimpleCursorAdapter) parent.getAdapter()).getCursor();
-        cursor.moveToPosition(position);
 
-        Log.d(TAG, "Phone is "+cursor.getString(1));
     }
 
     @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new CursorLoader(
-                getActivity(),
-                ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-                new String[]{ContactsContract.CommonDataKinds.Phone._ID,ContactsContract.CommonDataKinds.Phone.NUMBER,
-                        ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME},
-                null,
-                null,
-                null
-        );
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        mCursorAdapter.swapCursor(data);
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-        mCursorAdapter.swapCursor(null);
+    public void onFetchedContacts(ArrayList<Contact> contacts) {
+        mContacts.clear();
+        mContacts.addAll(contacts);
+        mAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -106,5 +92,23 @@ public class ContactsFragment extends android.app.Fragment implements
 
     public interface Listener {
         public void onFragmentInteraction(Uri uri);
+    }
+
+    private class ContactAdapter extends ArrayAdapter<Contact>{
+
+        ContactAdapter(ArrayList<Contact> contacts){
+            super(getActivity(), R.layout.contact_list_item, R.id.name, contacts);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+
+            convertView =  super.getView(position, convertView, parent);
+            Contact contact = getItem(position);
+            TextView nameView = (TextView)convertView.findViewById(R.id.name);
+            nameView.setText(contact.getPhoneNumber());
+            return convertView;
+        }
+
     }
 }
