@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.parse.Parse;
+
 
 public class ContactsActivity extends ActionBarActivity implements ContactsFragment.Listener {
 
@@ -15,6 +17,11 @@ public class ContactsActivity extends ActionBarActivity implements ContactsFragm
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contacts);
+
+        // Enable Local Datastore.
+        Parse.enableLocalDatastore(this);
+
+        Parse.initialize(this, "7Ln4bAOFHWFptAKYevJffQnUWMrWJQ0PpHofYNrX", "cAioKy8Q9ZMWIceXPD3vxl4p0u1QDu8rmIUJhIqa");
 
         Intent i = new Intent(this, SigninActivity.class);
         startActivity(i);
