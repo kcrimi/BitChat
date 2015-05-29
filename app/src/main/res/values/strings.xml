@@ -8,4 +8,6 @@
     <string name="number_hint">Please enter your number</string>
     <string name="sign_up">Sign Up</string>
     <string name="login">Log In</string>
+    <string name="send">Send</string>
+    <string name="title_activity_chat">ChatActivity</string>
 </resources>

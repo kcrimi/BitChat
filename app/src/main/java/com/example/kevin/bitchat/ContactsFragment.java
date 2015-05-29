@@ -63,7 +63,7 @@ public class ContactsFragment extends android.app.Fragment implements
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+        mListener.onContactSelected(mContacts.get(position));
     }
 
     @Override
@@ -91,7 +91,7 @@ public class ContactsFragment extends android.app.Fragment implements
     }
 
     public interface Listener {
-        public void onFragmentInteraction(Uri uri);
+        public void onContactSelected(Contact contact);
     }
 
     private class ContactAdapter extends ArrayAdapter<Contact>{

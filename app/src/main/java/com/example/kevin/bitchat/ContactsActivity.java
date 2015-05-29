@@ -24,7 +24,7 @@ public class ContactsActivity extends ActionBarActivity implements ContactsFragm
 
         Parse.initialize(this, "7Ln4bAOFHWFptAKYevJffQnUWMrWJQ0PpHofYNrX", "cAioKy8Q9ZMWIceXPD3vxl4p0u1QDu8rmIUJhIqa");
 
-        if(ParseUser.getCurrentUser() == null) {
+        if(ContactDataSource.getCurrentUser() == null) {
             Intent i = new Intent(this, SigninActivity.class);
             startActivity(i);
         }
@@ -35,6 +35,12 @@ public class ContactsActivity extends ActionBarActivity implements ContactsFragm
         }
     }
 
+    @Override
+    public void onContactSelected(Contact contact) {
+        Intent i = new Intent(this, ChatActivity.class);
+        i.putExtra(ChatActivity.CONTACT_NUMBER, contact.getPhoneNumber());
+        startActivity(i);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -56,10 +62,5 @@ public class ContactsActivity extends ActionBarActivity implements ContactsFragm
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onFragmentInteraction(Uri uri) {
-
     }
 }

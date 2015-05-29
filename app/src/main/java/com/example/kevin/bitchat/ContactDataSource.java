@@ -21,12 +21,23 @@ import java.util.List;
  */
 public class ContactDataSource implements LoaderManager.LoaderCallbacks<Cursor>{
 
+    private static Contact sCurrentUser;
+
     private Context mContext;
     private Listener mListener;
 
     ContactDataSource(Context context, Listener listener){
         mContext = context;
         mListener = listener;
+    }
+
+    public static Contact getCurrentUser(){
+        if (sCurrentUser == null && ParseUser.getCurrentUser() != null){
+            sCurrentUser = new Contact();
+            sCurrentUser.setPhoneNumber(ParseUser.getCurrentUser().getUsername());
+            sCurrentUser.setName((String)ParseUser.getCurrentUser().get("name"));
+        }
+        return sCurrentUser;
     }
 
     @Override
