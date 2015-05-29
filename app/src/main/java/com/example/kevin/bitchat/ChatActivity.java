@@ -27,6 +27,7 @@ public class ChatActivity extends ActionBarActivity implements View.OnClickListe
     private ArrayList<Message> mMessages;
     private MessageAdapter mAdapter;
     private String mRecipient;
+    private ListView mListView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,9 +39,9 @@ public class ChatActivity extends ActionBarActivity implements View.OnClickListe
         mMessages = new ArrayList<Message>();
         mMessages.add(new Message("Hello", "16024787348"));
 
-        ListView listView = (ListView)findViewById(R.id.messages_list);
+        mListView = (ListView)findViewById(R.id.messages_list);
         mAdapter = new MessageAdapter(mMessages);
-        listView.setAdapter(mAdapter);
+        mListView.setAdapter(mAdapter);
 
         Button sendMessage= (Button)findViewById(R.id.send_message);
         sendMessage.setOnClickListener(this);
@@ -66,6 +67,7 @@ public class ChatActivity extends ActionBarActivity implements View.OnClickListe
         mMessages.clear();
         mMessages.addAll(messages);
         mAdapter.notifyDataSetChanged();
+        mListView.setSelection(mMessages.size() - 1);
     }
 
     @Override
