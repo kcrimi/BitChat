@@ -1,8 +1,10 @@
 package com.example.kevin.bitchat;
 
 import android.graphics.Color;
+import android.os.Build;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,16 +20,34 @@ import android.widget.TextView;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.logging.Handler;
 
 
 public class ChatActivity extends ActionBarActivity implements View.OnClickListener, MessageDataSource.Listener{
 
     public static final String CONTACT_NUMBER = "Contact Number";
+    public static final String TAG = "Chat Activity";
+
 
     private ArrayList<Message> mMessages;
     private MessageAdapter mAdapter;
     private String mRecipient;
     private ListView mListView;
+    private Date mLastMessageDate = new Date();
+
+    private android.os.Handler mHandler = new android.os.Handler();
+    private Runnable mRunnable = new Runnable() {
+        @Override
+        public void run() {
+            Log.d(TAG, "runnable called");
+            MessageDataSource.fetchMessagesAfter(ContactDataSource.getCurrentUser().getPhoneNumber(),
+                    mRecipient,
+                    mLastMessageDate,
+                    ChatActivity.this);
+            mHandler.postDelayed(this, 1000);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +57,6 @@ public class ChatActivity extends ActionBarActivity implements View.OnClickListe
         mRecipient = getIntent().getStringExtra(CONTACT_NUMBER);
 
         mMessages = new ArrayList<Message>();
-        mMessages.add(new Message("Hello", "16024787348"));
 
         mListView = (ListView)findViewById(R.id.messages_list);
         mAdapter = new MessageAdapter(mMessages);
@@ -57,7 +76,6 @@ public class ChatActivity extends ActionBarActivity implements View.OnClickListe
         String newMessage = newMessageView.getText().toString();
         newMessageView.setText("");
         Message message = new Message(newMessage, ContactDataSource.getCurrentUser().getPhoneNumber());
-        mMessages.add(message);
         mAdapter.notifyDataSetChanged();
         MessageDataSource.sendMessage(message.getSender(), mRecipient, message.getText());
     }
@@ -65,9 +83,30 @@ public class ChatActivity extends ActionBarActivity implements View.OnClickListe
     @Override
     public void onFetchedMessages(ArrayList<Message> messages) {
         mMessages.clear();
+        addMessages(messages);
+        mHandler.postDelayed(mRunnable, 1000);
+    }
+
+    @Override
+    public void onAddMessages(ArrayList<Message> messages) {
+        addMessages(messages);
+    }
+
+    private void addMessages(ArrayList<Message> messages){
+
         mMessages.addAll(messages);
         mAdapter.notifyDataSetChanged();
-        mListView.setSelection(mMessages.size() - 1);
+        if (mMessages.size() > 0){
+            mListView.setSelection(mMessages.size() - 1);
+            Message message = mMessages.get(mMessages.size() - 1);
+            mLastMessageDate = message.getDate();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mHandler.removeCallbacks(mRunnable);
     }
 
     @Override
@@ -109,11 +148,20 @@ public class ChatActivity extends ActionBarActivity implements View.OnClickListe
 
             LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams)nameView.getLayoutParams();
 
+            int sdk = Build.VERSION.SDK_INT;
             if (message.getSender().equals(ContactDataSource.getCurrentUser().getPhoneNumber())){
-                nameView.setBackground(getDrawable(R.drawable.bubble_right_green));
+                if (sdk >= Build.VERSION_CODES.JELLY_BEAN){
+                    nameView.setBackground(getDrawable(R.drawable.bubble_right_green));
+                }else{
+                    nameView.setBackgroundDrawable(getDrawable(R.drawable.bubble_right_green));
+                }
                 layoutParams.gravity = Gravity.RIGHT;
             }else{
-                nameView.setBackground(getDrawable(R.drawable.bubble_left_gray));
+                if (sdk >= Build.VERSION_CODES.JELLY_BEAN){
+                    nameView.setBackground(getDrawable(R.drawable.bubble_left_gray));
+                }else{
+                    nameView.setBackgroundDrawable(getDrawable(R.drawable.bubble_left_gray));
+                }
                 layoutParams.gravity = Gravity.LEFT;
             }
 
